@@ -1,0 +1,5 @@
+name: HakoniwaClanExtension
+main: net.th_hakoniwa.HakoniwaClanExtension.HakoniwaClanExtension
+author: Kyan
+version: 0.0.1-SNAPSHOT
+prefix: [HCL]
