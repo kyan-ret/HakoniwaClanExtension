@@ -1,6 +1,7 @@
 package net.th_hakoniwa.HakoniwaClanExtension.Clan;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -24,7 +25,7 @@ import net.th_hakoniwa.HakoniwaCore.Core.Player.HCPlayer;
 
 public class ClanManager implements Listener {
 	//定数 プレイヤーデータ クランパス
-	private final String PLAYER_CLAN_PATH = "Data.Info.Clan";
+	public static final String PLAYER_CLAN_PATH = "Info.Clan";
 
 	//変数
 	private static ClanManager instance = null;
@@ -107,15 +108,17 @@ public class ClanManager implements Listener {
 		//処理時間計測用
 		long start = System.currentTimeMillis();
 		//アンロード
-		for(UUID cuid : clanList.keySet()){
+		for(UUID cuid : new ArrayList<UUID>(clanList.keySet())){
 			//クラン取得
 			Clan clan = clanList.get(cuid);
 			//保存
 			clan.save();
 			//各種mapから削除
 			clanList.remove(cuid);
-			clanNameList.remove(cuid);
-			clanTagList.remove(cuid);
+			clanNameList.remove(clan.getClanName());
+			//TODO ここもしかしたらカラコ外さないとダメかも
+			clanTagList.remove(ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', clan.getClanTag().toLowerCase())));
+			//clanTagList.remove(clan.getClanTag());
 			//Clanにnullをセット
 			clan = null;
 			//アンロード完了ログ
@@ -169,7 +172,6 @@ public class ClanManager implements Listener {
 
 	//クラン解散
 	public boolean disbandClan(UUID uid){
-		//TODO 実装
 		//クラン存在チェック
 		Clan clan = getClanFromUUID(uid);
 		if(clan == null) return false;
@@ -183,6 +185,16 @@ public class ClanManager implements Listener {
 		clanList.remove(clan.getUniqueId());
 		clanNameList.remove(clan.getClanName().toLowerCase());
 		clanTagList.remove(rTag);
+
+		//クランファイル削除
+		File cf = new File(getDataFolder(), uid.toString() + ".yml");
+		//
+		if(!cf.delete()) {
+			//ログ出しておく
+			Bukkit.getLogger().warning("[HCL] Failed to delete clan file. (UUID: " + uid.toString() + ")");
+			//削除失敗 VM終了時に消すように指示
+			cf.deleteOnExit();
+		}
 
 		//クラン解散イベント呼び出し
 		Bukkit.getServer().getPluginManager().callEvent(new ClanDisbandEvent(clan.getUniqueId(), clan.getClanName(), clan.getClanTag()));

@@ -20,8 +20,6 @@ import net.th_hakoniwa.HakoniwaCore.API.HakoniwaAPI;
 import net.th_hakoniwa.HakoniwaCore.Core.Player.HCPlayer;
 
 public class Clan {
-	//プレイヤーデータ クランパス
-	private final String PLAYER_CLAN_PATH = "Data.Info.Clan";
 	//クランデータ 各種パス
 	private final String CLAN_UUID_PATH = "Clan.Info.UUID";
 	private final String CLAN_NAME_PATH = "Clan.Info.Name";
@@ -153,7 +151,7 @@ public class Clan {
 		}
 	}
 	public List<String> getComments(){
-		return cmt;
+		return new ArrayList<>(cmt);
 	}
 
 	//リーダー
@@ -196,14 +194,14 @@ public class Clan {
 		//プレイヤー情報取得
 		HCPlayer hcp = HakoniwaAPI.getPlayer(muid);
 		//TODO 前のプラグインでなぜか文字列でNULLを入れるようにしていたのでそれのチェック。正式公開時には文字列のNULLにならないように改変すること。
-		if(hcp.getDataString(PLAYER_CLAN_PATH) != null && !hcp.getDataString(PLAYER_CLAN_PATH).equalsIgnoreCase("NULL")){
+		if(hcp.getDataString(ClanManager.PLAYER_CLAN_PATH) != null && !hcp.getDataString(ClanManager.PLAYER_CLAN_PATH).equalsIgnoreCase("NULL")){
 			//既にクランに所属している
 			//追加でプレイヤーデータをロードした場合アンロード
 			if(!online) HakoniwaAPI.unloadPlayer(muid);
 			return false;
 		}
 		//プレイヤーデータ更新
-		hcp.setData(PLAYER_CLAN_PATH, uid.toString());
+		hcp.setData(ClanManager.PLAYER_CLAN_PATH, uid.toString());
 		//プレイヤーデータ保存
 		hcp.save();
 		//追加でプレイヤーデータをロードした場合アンロード
@@ -232,7 +230,7 @@ public class Clan {
 		//プレイヤー情報取得
 		HCPlayer hcp = HakoniwaAPI.getPlayer(muid);
 		//プレイヤーデータ更新
-		hcp.setData(PLAYER_CLAN_PATH, null);
+		hcp.setData(ClanManager.PLAYER_CLAN_PATH, null);
 		//プレイヤーデータ保存
 		hcp.save();
 		//追加でプレイヤーデータをロードした場合アンロード
@@ -246,7 +244,7 @@ public class Clan {
 		return true;
 	}
 	public List<UUID> getMembers(){
-		return m;
+		return new ArrayList<>(m);
 	}
 
 
