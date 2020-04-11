@@ -216,7 +216,7 @@ public class Clan {
 		return true;
 	}
 	public boolean removeMember(UUID muid, boolean force){
-		//このクランに所属していない、または複数人所属している場合でリーダーを指定した場合
+		//このクランに所属していない、または複数人所属している場合でリーダーを指定した場合は拒否
 		if(!m.contains(muid) || (muid == l && !force)) return false;
 		//プレイヤー存在チェック
 		OfflinePlayer ofp = Bukkit.getOfflinePlayer(muid);
